@@ -1,18 +1,21 @@
-# Basic Reason Template
+# Fifteen Puzzle
 
-Hello! This project allows you to quickly get started with Reason and BuckleScript. If you wanted a more sophisticated version, try the `react` template (`bsb -theme react -init .`).
+This is a simple ReasonML version of the 15 puzzle. 
+
+Well, it is a 9 puzzle right now, if you want 15 tiles, change `let sides = 3;` to `let sides = 4;` in `Board.re`
+
+
+
+You can replace the image used with your own, its dimensions should be 600 x 600 pixels.
+
+![screenshot](fifteen.png)
 
 # Build
 ```
 npm run build
+npm run webpack_dev
 ```
 
-# Build + Watch
+# Play
 
-```
-npm run start
-```
-
-
-# Editor
-If you use `vscode`, Press `Windows + Shift + B` it will build automatically
+open `./build/index.html` in a browser
