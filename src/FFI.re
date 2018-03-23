@@ -1,5 +1,3 @@
-type element;
-
 type css;
 
 /* type window; */
@@ -11,9 +9,9 @@ type css;
 
 /* [@bs.val] external alert : string => unit = "alert"; */
 [@bs.val]
-external getElementById : string => element = "document.getElementById";
+external getElementById : string => Dom.element = "document.getElementById";
 
-[@bs.get] external style : element => css = "";
+[@bs.get] external style : Dom.element => css = "";
 
 [@bs.set] external display : (css, string) => unit = "";
 
@@ -22,36 +20,35 @@ type document;
 [@bs.val] external doc : document = "document";
 
 [@bs.val]
-external createElement : string => element = "document.createElement";
+external createElement : string => Dom.element = "document.createElement";
 
-[@bs.send] external appendChild : (element, element) => unit = "";
+[@bs.send] external appendChild : (Dom.element, Dom.element) => unit = "";
 
-[@bs.get] external getWidth : element => int = "innerWidth";
+[@bs.get] external getWidth : Dom.element => int = "innerWidth";
 
-[@bs.get] external getHeight : element => int = "innerHeight";
+[@bs.get] external getHeight : Dom.element => int = "innerHeight";
 
-[@bs.set] external setWidth : (element, int) => unit = "width";
+[@bs.set] external setWidth : (Dom.element, int) => unit = "width";
 
-[@bs.set] external setHeight : (element, int) => unit = "height";
+[@bs.set] external setHeight : (Dom.element, int) => unit = "height";
 
-type imageElement = element;
+type image = Dom.element;
 
-type canvasRenderingContext2D = element;
+type canvasRenderingContext2D = Dom.element;
 
 type context = canvasRenderingContext2D;
 
-type canvasElement = element;
+type canvas = Dom.element;
 
 [@bs.send]
-external getContext :
-  (canvasElement, [@bs.as "2d"] _) => canvasRenderingContext2D =
-  "getContext";
+external getContext : (canvas, [@bs.as "2d"] _) => canvasRenderingContext2D =
+  "";
 
 [@bs.send]
 external drawImage :
   (
     ~ctx: canvasRenderingContext2D,
-    ~img: imageElement,
+    ~img: image,
     ~sx: int,
     ~sy: int,
     ~sw: int,
@@ -79,5 +76,9 @@ external clearRect :
   "";
 
 [@bs.send]
-external addEventListener : (element, string, Dom.event => unit) => unit =
-  "addEventListener";
+external addEventListener : (Dom.element, string, Dom.event => unit) => unit =
+  "";
+
+[@bs.send]
+external removeEventListener : (Dom.element, string, Dom.event => unit) => unit =
+  "";

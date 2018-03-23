@@ -1,31 +1,13 @@
-type idx;
-
-type coords;
-
 type t;
 
-let size: int;
-
-let empty: t;
-
-let click: ((int, int), t) => t;
-
-let swapable: t => list(idx);
-
-let holeIdx: t => idx;
-
-let swap: (idx, idx, t) => t;
-
-let draw: (t, Canvas.t) => unit;
-
+/* create a board to represent the tiles position  */
 let initial: unit => t;
 
-let toIdx: coords => idx;
+/* return the board resulting from clicking on tile (x,y)  */
+let click: (~coords: (int, int), ~board: t) => t;
 
-let toCoords: idx => coords;
+/* draw the given board to the canvas */
+let draw: (~board: t, ~canvas: Canvas.t) => unit;
 
-let toImgC: coords => coords;
-
-let toTileC: coords => coords;
-
-let solved: t => bool;
+/* is the given board solved? */
+let solved: (~board: t) => bool;

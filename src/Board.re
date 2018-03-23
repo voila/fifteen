@@ -4,30 +4,28 @@ module Tile = {
   and t =
     | Tile(coords)
     | Hole;
-  let draw = ((i', j'): coords, tile: t, cvs: Canvas.t, width: int) =>
+  let draw = ((i', j'), tile, canvas, width) =>
     switch (tile) {
-    | Hole => Canvas.fillRect(cvs, i' * width, j' * width, width, "#000000")
+    | Hole =>
+      Canvas.fillRect(
+        ~canvas,
+        ~x=i' * width,
+        ~y=j' * width,
+        ~width,
+        ~color="#000000",
+      )
     | Tile((i, j)) =>
       Canvas.drawImage(
-        cvs,
-        i * width,
-        j * width,
-        i' * width,
-        j' * width,
-        width,
+        ~canvas,
+        ~sx=i * width,
+        ~sy=j * width,
+        ~dx=i' * width,
+        ~dy=j' * width,
+        ~width,
       )
     };
   let tile = ((i, j)) => Tile((i, j));
-  /* let show = t =>
-     switch (t) {
-     | Tile((i, j)) => {j|tile ($i, $j)|j}
-     | Hole => {j|hole|j}
-     }; */
 };
-
-type idx = int;
-
-type coords = Tile.coords;
 
 type t = array(Tile.t);
 
@@ -41,8 +39,7 @@ let toIdx = ((i, j)) => i + sides * j;
 
 let toCoords = i => (i mod sides, i / sides);
 
-let toImgC = ((i, j)) => (i * width, j * width);
-
+/* let toImgC = ((i, j)) => (i * width, j * width); */
 let toTileC = ((x, y)) => (x / width, y / width);
 
 let replaceWithHole = (i, b) =>
@@ -53,9 +50,7 @@ let replaceWithHole = (i, b) =>
   | _ => assert false
   };
 
-let empty = [||];
-
-let draw = (b, cvs) =>
+let draw = (~board as b, ~canvas as cvs) =>
   Belt.Array.forEachWithIndex(b, (i, t) =>
     Tile.draw(toCoords(i), t, cvs, width)
   );
@@ -93,18 +88,19 @@ let swap = (i1, i2, b) => {
   b;
 };
 
-let click = ((x, y), b) => {
+let click = (~coords as (x, y), ~board as b) => {
   /* First we map x,y to the tile */
   let i' = toTileC((x, y)) |> toIdx;
   /* if selected tile is adjacent to the hole */
   if (Belt.List.some(swapable(b), i => i == i')) {
+    /* we swap them */
     swap(i', holeIdx(b), b);
   } else {
     b;
   };
 };
 
-/* move the hole at ramdom, n times */
+/* move the hole at ramdom, n =< x < n + n times */
 let scramble = (n, b) => {
   Random.self_init();
   let rounds = Random.int(n) + n;
@@ -115,9 +111,10 @@ let scramble = (n, b) => {
           shuffle(swapable(b))
           |> (b => keep(b, idx => idx != lastIdx) |> headExn)
         );
+      /* we know headExn is safe because swapable(b) should always have 2+ elts ! */
       let holeIdx = holeIdx(b);
-      /** we know headExn is safe here ! */
       let b' = swap(holeIdx, nextIdx, b);
+      /* Js.log({j|swap $holeIdx $nextIdx|j}); */
       loop(n - 1, nextIdx, b');
     } else {
       b;
@@ -128,11 +125,11 @@ let scramble = (n, b) => {
 let initial = () =>
   Belt.Array.makeBy(size, i => i |> toCoords |> Tile.tile)
   |> replaceWithHole(Random.int(16))
-  |> scramble(15);
+  |> scramble(20);
 
 let id = x => x;
 
-let solved = b =>
+let solved = (~board as b) =>
   Belt.Array.(
     mapWithIndex(b, (i, t) =>
       switch (t) {
