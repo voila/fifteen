@@ -11,8 +11,7 @@ let create = () => {
   Canvas.onClick(
     ~canvas,
     ~handle=evt => {
-      b := Board.click(~coords=(offsetX(evt), offsetY(evt)), ~board=b^);
-      Board.draw(~board=b^, ~canvas);
+      b := Board.click(~coords=(offsetX(evt), offsetY(evt)), ~board=b^,~canvas);
       Board.solved(~board=b^) ? show("msg") : ();
     },
   );

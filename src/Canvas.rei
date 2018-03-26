@@ -6,9 +6,9 @@ let create: (~containerId: string, ~imageId: string, ~width: int) => t;
 /* attach an onclick event handler */
 let onClick: (~canvas: t, ~handle: Dom.event => unit) => unit;
 
-/* draw a colored rectangle */
-let fillRect:
-  (~canvas: t, ~x: int, ~y: int, ~width: int, ~color: string) => unit;
+/* delete a rectangular portion of the canvs */
+let clearRect:
+  (~canvas: t, ~x: int, ~y: int, ~width: int, ~height: int) => unit;
 
 /* draw portion of the game's image */
 let drawImage:

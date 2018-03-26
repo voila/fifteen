@@ -1,19 +1,12 @@
 /* Tile */
 module Tile = {
   type coords = (int, int)
-  and t =
+  and t = 
     | Tile(coords)
     | Hole;
   let draw = ((i', j'), tile, canvas, width) =>
     switch (tile) {
-    | Hole =>
-      Canvas.fillRect(
-        ~canvas,
-        ~x=i' * width,
-        ~y=j' * width,
-        ~width,
-        ~color="#000000",
-      )
+    | Hole => ()
     | Tile((i, j)) =>
       Canvas.drawImage(
         ~canvas,
@@ -24,12 +17,51 @@ module Tile = {
         ~width,
       )
     };
+  
+  let animate = (tile, (i,j) as _start, (i',j') as _dest, canvas, width) => {
+    switch (tile) {
+      | Hole => failwith("Tile.animate: hole tile")
+      | Tile((ti, tj)) =>
+      /* distance needs to be a multiple of steps, otherwise tile wont be drawn where it should */
+        let steps = 10;
+        let step = ref(0);
+        let dx = ref(i * width);
+        let dy = ref(j * width);
+        let deltaX = (i' - i) * width / steps; 
+        let deltaY = (j' - j) * width / steps;
+        let rec drawStep = (_time) => {
+          if(step^ < steps){
+            /* delete tile at previous location */
+            Canvas.clearRect(~canvas, ~x=dx^, ~y=dy^, ~width, ~height=width);
+            step := step^ + 1;
+            dx := i * width + step^ * deltaX;
+            dy := j * width + step^ * deltaY;
+            /* draw tile at new location */
+            Canvas.drawImage(
+            ~canvas,
+            ~sx=ti * width,
+            ~sy=tj * width,
+            ~dx=dx^,
+            ~dy=dy^,
+            ~width,
+            );
+            FFI.requestAnimationFrame(drawStep) |> ignore;
+          } else {
+            ()
+          }
+        };
+      FFI.requestAnimationFrame(drawStep) |> ignore;
+    }
+  };
+  
   let tile = ((i, j)) => Tile((i, j));
 };
 
+type idx = int;
+
 type t = array(Tile.t);
 
-let sides = 3;
+let sides = 4;
 
 let width = 600 / sides;
 
@@ -88,13 +120,16 @@ let swap = (i1, i2, b) => {
   b;
 };
 
-let click = (~coords as (x, y), ~board as b) => {
+let click = (~coords as (x, y), ~board as b, ~canvas as cvs) => {
   /* First we map x,y to the tile */
-  let i' = toTileC((x, y)) |> toIdx;
+  let (i,j) = toTileC((x, y));
+  let idx = (i,j) |> toIdx;
   /* if selected tile is adjacent to the hole */
-  if (Belt.List.some(swapable(b), i => i == i')) {
+  if (Belt.List.some(swapable(b), i => i == idx)) {
+    /* we animate the clicked tile */
+    Tile.animate(b[idx], (i,j), holeIdx(b) |> toCoords, cvs, width);
     /* we swap them */
-    swap(i', holeIdx(b), b);
+    swap(idx, holeIdx(b), b);
   } else {
     b;
   };
@@ -114,7 +149,6 @@ let scramble = (n, b) => {
       /* we know headExn is safe because swapable(b) should always have 2+ elts ! */
       let holeIdx = holeIdx(b);
       let b' = swap(holeIdx, nextIdx, b);
-      /* Js.log({j|swap $holeIdx $nextIdx|j}); */
       loop(n - 1, nextIdx, b');
     } else {
       b;
@@ -125,7 +159,7 @@ let scramble = (n, b) => {
 let initial = () =>
   Belt.Array.makeBy(size, i => i |> toCoords |> Tile.tile)
   |> replaceWithHole(Random.int(16))
-  |> scramble(20);
+  |> scramble(30);
 
 let id = x => x;
 

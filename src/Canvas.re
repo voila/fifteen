@@ -13,14 +13,9 @@ let create = (~containerId, ~imageId, ~width) => {
   (cvs, ctx, img);
 };
 
-/* let clear = (cvs, ctx, _) => {
-     let width = getWidth(cvs);
-     clearRect(~ctx, 0, 0, width, width);
-   }; */
-let fillRect = (~canvas as (_, ctx, _), ~x, ~y, ~width, ~color) => {
-  setFillStyle(ctx, color) |> ignore;
-  fillRect(~ctx, ~x, ~y, ~w=width, ~h=width) |> ignore;
-};
+let clearRect = (~canvas as (_, ctx, _), ~x, ~y, ~width, ~height) => {
+     clearRect(~ctx, x, y, width, height);
+   }; 
 
 let drawImage = (~canvas as (_, ctx, img), ~sx, ~sy, ~dx, ~dy, ~width) =>
   drawImage(

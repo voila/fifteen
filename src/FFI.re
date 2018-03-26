@@ -3,6 +3,12 @@ type css;
 /* type window; */
 /* [@bs.val] external window : window = "window"; */
 /* [@bs.set] external onload : (window, unit => unit) => unit = ""; */
+type time;
+
+[@bs.val]
+external requestAnimationFrame : (time => unit) => int =
+  "window.requestAnimationFrame";
+
 [@bs.get] external offsetX : Dom.event => int = "";
 
 [@bs.get] external offsetY : Dom.event => int = "";
@@ -66,14 +72,14 @@ external setFillStyle : (canvasRenderingContext2D, string) => unit =
   "fillStyle";
 
 [@bs.send]
-external fillRect :
-  (~ctx: canvasRenderingContext2D, ~x: int, ~y: int, ~w: int, ~h: int) => unit =
-  "";
-
-[@bs.send]
 external clearRect :
   (~ctx: canvasRenderingContext2D, int, int, int, int) => unit =
   "";
+
+[@bs.send] external save : (~ctx: canvasRenderingContext2D, unit) => unit = "";
+
+[@bs.send]
+external restore : (~ctx: canvasRenderingContext2D, unit) => unit = "";
 
 [@bs.send]
 external addEventListener : (Dom.element, string, Dom.event => unit) => unit =
