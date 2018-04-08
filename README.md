@@ -6,6 +6,10 @@ You can replace the image used with your own, its dimensions should be 600 x 600
 
 ![screenshot](fifteen.png)
 
+# Try
+
+[demo](http://voila.github.io/fifteen.html)
+
 # Build
 ```
 npm run build
