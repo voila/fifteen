@@ -1,6 +1,6 @@
 # Fifteen Puzzle
 
-This is a simple ReasonML version of the 15 puzzle.
+This is a simple ReasonML version of the [15 puzzle](https://en.wikipedia.org/wiki/15_puzzle).
 
 You can replace the image used with your own, its dimensions should be 600 x 600 pixels.
 
